@@ -10,7 +10,7 @@ import { LogoIcon, SettingsIcon } from './components/Icons';
 
 // Default Jackett configuration.
 // For a self-hosted or pre-configured setup, you can replace these placeholder values.
-const DEFAULT_JACKETT_URL = 'http://192.168.1.28:9117';
+const DEFAULT_JACKETT_URL = 'http://43.160.202.61:9117';
 const DEFAULT_API_KEY = ''; // It's recommended to leave this blank for security unless it's a private deployment.
 
 const App: React.FC = () => {
