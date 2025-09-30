@@ -8,10 +8,9 @@ interface SettingsPanelProps {
   onSave: (url: string, apiKey: string) => void;
   onClose: () => void;
   isOpen: boolean;
-  isApiKeyHidden: boolean;
 }
 
-const SettingsPanel: React.FC<SettingsPanelProps> = ({ initialUrl, initialApiKey, onSave, onClose, isOpen, isApiKeyHidden }) => {
+const SettingsPanel: React.FC<SettingsPanelProps> = ({ initialUrl, initialApiKey, onSave, onClose, isOpen }) => {
   const [url, setUrl] = useState(initialUrl);
   const [apiKey, setApiKey] = useState(initialApiKey);
   const [isTesting, setIsTesting] = useState(false);
@@ -74,30 +73,19 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ initialUrl, initialApiKey
               className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-md text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
             />
           </div>
-          {isApiKeyHidden ? (
-             <div>
-              <label className="block text-sm font-medium text-slate-400 mb-1">
-                API Key
-              </label>
-              <div className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-md text-slate-400 italic">
-                API key is configured securely.
-              </div>
-            </div>
-          ) : (
-            <div>
-              <label htmlFor="api-key" className="block text-sm font-medium text-slate-400 mb-1">
-                API Key
-              </label>
-              <input
-                id="api-key"
-                type="password"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="Your Jackett API key"
-                className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-md text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
-              />
-            </div>
-          )}
+          <div>
+            <label htmlFor="api-key" className="block text-sm font-medium text-slate-400 mb-1">
+              API Key
+            </label>
+            <input
+              id="api-key"
+              type="password"
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              placeholder="Your Jackett API key"
+              className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-md text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
+            />
+          </div>
         </div>
         
         {testResult && (
