@@ -20,10 +20,14 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState<boolean>(false);
   
-  // Settings state - Initialized from localStorage, then Vercel env var, then defaults
+  // Settings state
   const [jackettUrl, setJackettUrl] = useState<string>(() => localStorage.getItem('jackettUrl') || DEFAULT_JACKETT_URL);
   const [apiKey, setApiKey] = useState<string>(() => localStorage.getItem('apiKey') || import.meta.env?.VITE_JACKETT_API_KEY || DEFAULT_API_KEY);
   const [showSettings, setShowSettings] = useState<boolean>(false);
+  
+  // Determine if the API key is set via environment variables and not overridden in local storage.
+  const isVercelApiKeySet = !!import.meta.env?.VITE_JACKETT_API_KEY;
+  const isApiKeyHidden = isVercelApiKeySet && !localStorage.getItem('apiKey');
 
   // Category state
   const [categories, setCategories] = useState<Category[]>([]);
@@ -83,9 +87,14 @@ const App: React.FC = () => {
 
   const handleSaveSettings = (url: string, key: string) => {
     setJackettUrl(url);
-    setApiKey(key);
     localStorage.setItem('jackettUrl', url);
-    localStorage.setItem('apiKey', key);
+
+    // Only save the API key if it's not hidden (i.e., not set by an env var)
+    if (!isApiKeyHidden) {
+      setApiKey(key);
+      localStorage.setItem('apiKey', key);
+    }
+
     setShowSettings(false);
     setError(null); // Clear settings-related errors
   };
@@ -141,6 +150,7 @@ const App: React.FC = () => {
         initialApiKey={apiKey}
         onSave={handleSaveSettings}
         onClose={() => setShowSettings(false)}
+        isApiKeyHidden={isApiKeyHidden}
       />
       <div className="min-h-screen bg-slate-900 text-slate-200 font-sans">
         <div className="container mx-auto px-4 py-8">
