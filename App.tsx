@@ -20,9 +20,12 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState<boolean>(false);
   
-  // Settings state
-  const [jackettUrl, setJackettUrl] = useState<string>(() => localStorage.getItem('jackettUrl') || import.meta.env?.VITE_JACKETT_URL || DEFAULT_JACKETT_URL);
-  const [apiKey, setApiKey] = useState<string>(() => localStorage.getItem('apiKey') || import.meta.env?.VITE_JACKETT_API_KEY || DEFAULT_API_KEY);
+  // Determine if config is set via environment variables, which should be treated as fixed.
+  const isConfigFromEnv = !!(import.meta.env?.VITE_JACKETT_URL && import.meta.env?.VITE_JACKETT_API_KEY);
+
+  // Settings state: Prioritize environment variables, then local storage, then defaults.
+  const [jackettUrl, setJackettUrl] = useState<string>(() => import.meta.env?.VITE_JACKETT_URL || localStorage.getItem('jackettUrl') || DEFAULT_JACKETT_URL);
+  const [apiKey, setApiKey] = useState<string>(() => import.meta.env?.VITE_JACKETT_API_KEY || localStorage.getItem('apiKey') || DEFAULT_API_KEY);
   const [showSettings, setShowSettings] = useState<boolean>(false);
 
   // Category state
@@ -58,7 +61,9 @@ const App: React.FC = () => {
   const handleSearch = useCallback(async () => {
     if (!areSettingsConfigured) {
         setError('Please configure your Jackett server URL and API key in the settings.');
-        setShowSettings(true);
+        if (!isConfigFromEnv) {
+          setShowSettings(true);
+        }
         return;
     }
     if (!query.trim()) {
@@ -79,7 +84,7 @@ const App: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [query, jackettUrl, apiKey, areSettingsConfigured, selectedCategory]);
+  }, [query, jackettUrl, apiKey, areSettingsConfigured, selectedCategory, isConfigFromEnv]);
 
   const handleSaveSettings = (url: string, key: string) => {
     setJackettUrl(url);
@@ -135,13 +140,15 @@ const App: React.FC = () => {
   return (
     <>
       <ProgressBar isLoading={isLoading} />
-      <SettingsPanel 
-        isOpen={showSettings}
-        initialUrl={jackettUrl}
-        initialApiKey={apiKey}
-        onSave={handleSaveSettings}
-        onClose={() => setShowSettings(false)}
-      />
+      {!isConfigFromEnv && (
+        <SettingsPanel 
+          isOpen={showSettings}
+          initialUrl={jackettUrl}
+          initialApiKey={apiKey}
+          onSave={handleSaveSettings}
+          onClose={() => setShowSettings(false)}
+        />
+      )}
       <div className="min-h-screen bg-slate-900 text-slate-200 font-sans">
         <div className="container mx-auto px-4 py-8">
           <header className="flex flex-col items-center justify-center text-center mb-8">
@@ -152,13 +159,15 @@ const App: React.FC = () => {
                           Torrent Wave
                       </h1>
                   </div>
-                  <button 
-                      onClick={() => setShowSettings(true)}
-                      className="absolute right-0 p-2 text-slate-400 hover:text-sky-400 transition-colors"
-                      aria-label="Open settings"
-                  >
-                      <SettingsIcon />
-                  </button>
+                  {!isConfigFromEnv && (
+                    <button 
+                        onClick={() => setShowSettings(true)}
+                        className="absolute right-0 p-2 text-slate-400 hover:text-sky-400 transition-colors"
+                        aria-label="Open settings"
+                    >
+                        <SettingsIcon />
+                    </button>
+                  )}
               </div>
               <p className="text-slate-400 mt-2">Your gateway to the world of torrents.</p>
           </header>
