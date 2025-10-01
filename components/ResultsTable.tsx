@@ -10,7 +10,6 @@ interface ResultsTableProps {
   isLoading: boolean;
   hasSearched: boolean;
   needsConfiguration: boolean;
-  onOpenSettings: () => void;
   sortConfig: { key: keyof TorrentResult; direction: 'ascending' | 'descending' };
   requestSort: (key: keyof TorrentResult) => void;
   currentPage: number;
@@ -63,7 +62,7 @@ const SkeletonRow: React.FC = () => (
 )
 
 const ResultsTable: React.FC<ResultsTableProps> = ({ 
-    results, isLoading, hasSearched, needsConfiguration, onOpenSettings,
+    results, isLoading, hasSearched, needsConfiguration,
     sortConfig, requestSort, currentPage, totalPages, onPageChange, totalResults
 }) => {
   const [activeCopyMagnetId, setActiveCopyMagnetId] = useState<number | null>(null);
@@ -155,13 +154,8 @@ const ResultsTable: React.FC<ResultsTableProps> = ({
            return (
              <div className="text-center py-16 px-6 bg-slate-800/50 border border-dashed border-slate-700 rounded-lg">
                 <h3 className="text-xl font-semibold text-slate-300">Configuration Required</h3>
-                <p className="text-slate-500 mt-2">Please set your Jackett URL and API Key in the settings to begin.</p>
-                <button 
-                  onClick={onOpenSettings}
-                  className="mt-4 px-4 py-2 bg-sky-600 text-white rounded-full font-semibold hover:bg-sky-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-sky-500 transition-colors"
-                >
-                  Open Settings
-                </button>
+                <p className="text-slate-500 mt-2">The Jackett server URL and API Key must be configured for the app to function.</p>
+                <p className="text-slate-500 mt-1">Please provide them via environment variables.</p>
             </div>
         );
       }
