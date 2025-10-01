@@ -21,7 +21,7 @@ const App: React.FC = () => {
   const [hasSearched, setHasSearched] = useState<boolean>(false);
   
   // Settings state
-  const [jackettUrl, setJackettUrl] = useState<string>(() => localStorage.getItem('jackettUrl') || import.meta.env.VITE_JACKETT_URL || DEFAULT_JACKETT_URL);
+  const [jackettUrl, setJackettUrl] = useState<string>(() => localStorage.getItem('jackettUrl') || import.meta.env?.VITE_JACKETT_URL || DEFAULT_JACKETT_URL);
   const [apiKey, setApiKey] = useState<string>(() => localStorage.getItem('apiKey') || import.meta.env?.VITE_JACKETT_API_KEY || DEFAULT_API_KEY);
   const [showSettings, setShowSettings] = useState<boolean>(false);
 
