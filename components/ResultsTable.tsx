@@ -34,9 +34,9 @@ const SeederPeers: React.FC<{ value: number, type: 'seeders' | 'peers' }> = ({ v
     const Icon = type === 'seeders' ? SeedersIcon : PeersIcon;
 
     return (
-        <div className={`flex items-center gap-1 font-mono ${colorClass}`}>
+        <div className={`flex items-center justify-center text-center gap-1.5 font-mono ${colorClass}`}>
             <Icon />
-            {value}
+            <span>{value}</span>
         </div>
     );
 };
@@ -61,6 +61,27 @@ const SkeletonRow: React.FC = () => (
     </tr>
 )
 
+const SkeletonCard: React.FC = () => (
+    <div className="bg-slate-800 border border-slate-700 rounded-lg shadow-lg p-4 animate-pulse">
+        <div className="h-5 bg-slate-700 rounded w-3/4 mb-2"></div>
+        <div className="h-3 bg-slate-700 rounded w-1/3 mb-3"></div>
+        <div className="flex justify-between border-y border-slate-700 py-3 mb-3">
+            <div className="h-4 bg-slate-700 rounded w-1/4"></div>
+            <div className="h-4 bg-slate-700 rounded w-1/4"></div>
+        </div>
+        <div className="flex justify-around mb-4">
+            <div className="h-4 bg-slate-700 rounded w-1/5"></div>
+            <div className="h-4 bg-slate-700 rounded w-1/5"></div>
+            <div className="h-4 bg-slate-700 rounded w-1/5"></div>
+        </div>
+        <div className="flex gap-2">
+            <div className="h-10 bg-slate-700 rounded-md w-full"></div>
+            <div className="h-10 bg-slate-700 rounded-md w-12"></div>
+        </div>
+    </div>
+);
+
+
 const ResultsTable: React.FC<ResultsTableProps> = ({ 
     results, isLoading, hasSearched, needsConfiguration,
     sortConfig, requestSort, currentPage, totalPages, onPageChange, totalResults
@@ -73,7 +94,6 @@ const ResultsTable: React.FC<ResultsTableProps> = ({
       return;
     }
     
-    // Always show the manual copy UI on click
     setActiveCopyMagnetId(id);
 
     const fallbackCopy = (text: string) => {
@@ -128,24 +148,31 @@ const ResultsTable: React.FC<ResultsTableProps> = ({
 
   if (isLoading) {
     return (
-      <div className="bg-slate-800/50 border border-slate-700 rounded-lg overflow-x-auto">
-        <table className="w-full text-left">
-          <thead className="text-xs text-slate-400 uppercase bg-slate-800">
-            <tr>
-              <th scope="col" className="px-4 py-3">Category</th>
-              <th scope="col" className="px-4 py-3">Title</th>
-              <th scope="col" className="px-4 py-3">Size</th>
-              <th scope="col" className="px-4 py-3">Seeders</th>
-              <th scope="col" className="px-4 py-3">Peers</th>
-              <th scope="col" className="px-4 py-3">Date</th>
-              <th scope="col" className="px-4 py-3">Links</th>
-            </tr>
-          </thead>
-          <tbody>
-            {[...Array(10)].map((_, i) => <SkeletonRow key={i} />)}
-          </tbody>
-        </table>
-      </div>
+      <>
+        {/* Desktop Skeleton */}
+        <div className="hidden md:block bg-slate-800/50 border border-slate-700 rounded-lg overflow-x-auto">
+          <table className="w-full text-left">
+            <thead className="text-xs text-slate-400 uppercase bg-slate-800">
+              <tr>
+                <th scope="col" className="px-4 py-3">Category</th>
+                <th scope="col" className="px-4 py-3">Title</th>
+                <th scope="col" className="px-4 py-3">Size</th>
+                <th scope="col" className="px-4 py-3">Seeders</th>
+                <th scope="col" className="px-4 py-3">Peers</th>
+                <th scope="col" className="px-4 py-3">Date</th>
+                <th scope="col" className="px-4 py-3">Links</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[...Array(10)].map((_, i) => <SkeletonRow key={i} />)}
+            </tbody>
+          </table>
+        </div>
+        {/* Mobile Skeleton */}
+        <div className="block md:hidden space-y-4">
+            {[...Array(5)].map((_, i) => <SkeletonCard key={i} />)}
+        </div>
+      </>
     );
   }
 
@@ -178,7 +205,8 @@ const ResultsTable: React.FC<ResultsTableProps> = ({
 
   return (
     <>
-      <div className="bg-slate-800/50 border border-slate-700 rounded-lg overflow-x-auto shadow-lg">
+      {/* Desktop Table View */}
+      <div className="hidden md:block bg-slate-800/50 border border-slate-700 rounded-lg overflow-x-auto shadow-lg">
         <table className="w-full text-left text-sm">
           <thead className="text-xs bg-slate-800">
             <tr>
@@ -201,7 +229,7 @@ const ResultsTable: React.FC<ResultsTableProps> = ({
                   </div>
                 </td>
                 <td className="px-4 py-4 max-w-sm xl:max-w-md">
-                  <p className="font-semibold text-slate-200 truncate" title={result.Title}>{result.Title}</p>
+                  <p className="font-semibold text-slate-200 break-words" title={result.Title}>{result.Title}</p>
                   <p className="text-xs text-slate-500">{result.Tracker}</p>
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap text-slate-300 font-mono">{formatBytes(result.Size)}</td>
@@ -253,26 +281,91 @@ const ResultsTable: React.FC<ResultsTableProps> = ({
           </tbody>
         </table>
       </div>
+
+      {/* Mobile Card View */}
+      <div className="block md:hidden space-y-4">
+        {results.map((result) => (
+            <div key={result.Id} className="bg-slate-800 border border-slate-700 rounded-lg shadow-lg p-4 flex flex-col gap-3">
+                <div>
+                    <p className="font-semibold text-slate-200 break-words">{result.Title}</p>
+                    <p className="text-xs text-slate-500 mt-1">{result.Tracker}</p>
+                </div>
+
+                <div className="flex items-center justify-between text-xs text-slate-400 border-y border-slate-700 py-3">
+                    <div className="flex items-center gap-2 truncate shrink">
+                        <CategoryIcon/>
+                        <span className="truncate">{result.CategoryDesc}</span>
+                    </div>
+                    <span className="font-mono whitespace-nowrap pl-2">{new Date(result.PublishDate).toLocaleDateString()}</span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 text-center">
+                    <div className="flex flex-col items-center justify-center gap-1 text-slate-300">
+                        <div className="flex items-center gap-1.5"><SizeIcon/> <span className="text-xs text-slate-400">Size</span></div>
+                        <div className="font-mono text-sm">{formatBytes(result.Size)}</div>
+                    </div>
+                    <div className="flex flex-col items-center justify-center gap-1">
+                        <span className="text-xs text-slate-400">Seeders</span>
+                        <SeederPeers value={result.Seeders} type="seeders"/>
+                    </div>
+                    <div className="flex flex-col items-center justify-center gap-1">
+                        <span className="text-xs text-slate-400">Peers</span>
+                        <SeederPeers value={result.Peers} type="peers"/>
+                    </div>
+                </div>
+
+                <div className="mt-1">
+                  {activeCopyMagnetId === result.Id ? (
+                      <div className="flex items-center gap-1 w-full">
+                        <input
+                          type="text"
+                          readOnly
+                          value={result.MagnetUri || ''}
+                          className="w-full min-w-0 flex-1 text-xs bg-slate-900 border border-slate-700 rounded-md px-2 py-1.5 text-slate-300 font-mono focus:outline-none focus:ring-2 focus:ring-sky-500"
+                          ref={input => input?.select()}
+                          onBlur={() => setActiveCopyMagnetId(null)}
+                          aria-label="Magnet link"
+                        />
+                        <button onClick={() => setActiveCopyMagnetId(null)} title="Close" className="p-2 text-slate-400 rounded-full hover:text-sky-400 hover:bg-slate-700" aria-label="Close copy input" >
+                          <CloseIcon />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                          <button onClick={() => handleCopyMagnet(result.MagnetUri, result.Id)} title={result.MagnetUri ? "Copy Magnet Link" : "Magnet link not available"} disabled={!result.MagnetUri} className="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-sm bg-sky-600 text-white rounded-md font-semibold hover:bg-sky-500 disabled:bg-slate-600 disabled:cursor-not-allowed transition-colors" aria-label="Copy magnet link" >
+                              <ClipboardCopyIcon />
+                              <span>Copy Magnet</span>
+                          </button>
+                          <a href={result.Details} target="_blank" rel="noopener noreferrer" title="View on Tracker" className="p-2.5 text-slate-400 bg-slate-700 hover:text-sky-400 hover:bg-slate-600 rounded-md transition-all duration-200" aria-label="View on Tracker" >
+                              <ExternalLinkIcon />
+                          </a>
+                      </div>
+                    )}
+                </div>
+            </div>
+        ))}
+      </div>
+
       {totalPages > 1 && (
-          <nav className="flex items-center justify-between mt-4 text-sm text-slate-400" aria-label="Pagination">
-              <div>
+          <nav className="flex flex-col md:flex-row items-center justify-between gap-4 mt-6 text-sm text-slate-400" aria-label="Pagination">
+              <div className="text-center md:text-left">
                   Showing <span className="font-semibold text-slate-200">{(currentPage - 1) * 50 + 1}</span> to <span className="font-semibold text-slate-200">{Math.min(currentPage * 50, totalResults)}</span> of <span className="font-semibold text-slate-200">{totalResults}</span> results
               </div>
               <div className="flex items-center gap-2">
                   <button
                       onClick={() => onPageChange(currentPage - 1)}
                       disabled={currentPage === 1}
-                      className="px-3 py-2 bg-slate-700 rounded-md hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="px-4 py-2 bg-slate-700 rounded-md hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                       Previous
                   </button>
-                  <span>
+                  <span className="px-2">
                       Page <span className="font-semibold text-slate-200">{currentPage}</span> of <span className="font-semibold text-slate-200">{totalPages}</span>
                   </span>
                   <button
                       onClick={() => onPageChange(currentPage + 1)}
                       disabled={currentPage === totalPages}
-                      className="px-3 py-2 bg-slate-700 rounded-md hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="px-4 py-2 bg-slate-700 rounded-md hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                       Next
                   </button>

@@ -139,8 +139,8 @@ const App: React.FC = () => {
 
           <main>
             <div className="max-w-3xl mx-auto mb-8">
-               <div className="flex flex-col sm:flex-row gap-4 items-center">
-                <div className="w-full sm:flex-grow">
+               <div className="flex flex-col md:flex-row gap-4 items-center">
+                <div className="w-full md:flex-grow">
                   <SearchBar 
                     query={query}
                     setQuery={setQuery}
@@ -149,7 +149,7 @@ const App: React.FC = () => {
                     disabled={!areSettingsConfigured && !isLoading}
                   />
                 </div>
-                <div className="w-full sm:w-64">
+                <div className="w-full md:w-64">
                     <CategoryFilter
                         categories={categories}
                         selectedCategory={selectedCategory}
