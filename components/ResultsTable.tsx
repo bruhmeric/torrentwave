@@ -88,6 +88,15 @@ const ResultsTable: React.FC<ResultsTableProps> = ({
 }) => {
   const [activeCopyMagnetId, setActiveCopyMagnetId] = useState<number | null>(null);
 
+  const sortOptions: { key: keyof TorrentResult; label: string }[] = [
+      { key: 'Seeders', label: 'Seeders' },
+      { key: 'Peers', label: 'Peers' },
+      { key: 'Size', label: 'Size' },
+      { key: 'PublishDate', label: 'Date' },
+      { key: 'Title', label: 'Title' },
+      { key: 'CategoryDesc', label: 'Category' },
+  ];
+
   const handleCopyMagnet = (magnetUri: string | null, id: number) => {
     if (!magnetUri) {
       console.error('Magnet link is not available.');
@@ -205,6 +214,38 @@ const ResultsTable: React.FC<ResultsTableProps> = ({
 
   return (
     <>
+      {/* Mobile Sort Controls */}
+      {totalResults > 0 && (
+        <div className="md:hidden flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <label htmlFor="sort-select" className="text-sm text-slate-400">Sort by:</label>
+            <div className="relative">
+              <select
+                id="sort-select"
+                value={sortConfig.key}
+                onChange={(e) => requestSort(e.target.value as keyof TorrentResult)}
+                className="pl-3 pr-8 py-2 text-sm bg-slate-700 border border-slate-600 rounded-md text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-500 appearance-none"
+                aria-label="Sort by property"
+              >
+                {sortOptions.map(opt => (
+                  <option key={opt.key} value={opt.key}>{opt.label}</option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
+                <SortIcon className="w-4 h-4" />
+              </div>
+            </div>
+          </div>
+          <button
+            onClick={() => requestSort(sortConfig.key)}
+            className="flex items-center gap-1.5 px-3 py-2 text-sm bg-slate-700 text-slate-200 rounded-md hover:bg-slate-600"
+            aria-label={`Current sort direction is ${sortConfig.direction}. Click to toggle.`}
+          >
+            {sortConfig.direction === 'ascending' ? <SortAscIcon /> : <SortDescIcon />}
+          </button>
+        </div>
+      )}
+      
       {/* Desktop Table View */}
       <div className="hidden md:block bg-slate-800/50 border border-slate-700 rounded-lg overflow-x-auto shadow-lg">
         <table className="w-full text-left text-sm">
