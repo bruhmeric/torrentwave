@@ -16,6 +16,13 @@ const DEFAULT_API_KEY = '';
 const jackettUrl = import.meta.env?.VITE_JACKETT_URL || DEFAULT_JACKETT_URL;
 const apiKey = import.meta.env?.VITE_JACKETT_API_KEY || DEFAULT_API_KEY;
 
+// Define gtag on window for TypeScript
+declare global {
+  interface Window {
+    gtag?: (...args: any[]) => void;
+  }
+}
+
 const App: React.FC = () => {
   const [query, setQuery] = useState<string>('');
   const [results, setResults] = useState<TorrentResult[]>([]);
@@ -35,6 +42,29 @@ const App: React.FC = () => {
   });
 
   const areSettingsConfigured = useMemo(() => !!(jackettUrl && apiKey), []);
+
+  // Initialize Google Analytics
+  useEffect(() => {
+    const measurementId = 'G-JF0E0PJETX';
+    // Prevent duplicate script injection
+    if (document.getElementById('ga-script')) return;
+
+    const script = document.createElement('script');
+    script.id = 'ga-script';
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
+    script.async = true;
+    document.head.appendChild(script);
+
+    const inlineScript = document.createElement('script');
+    inlineScript.id = 'ga-inline-script';
+    inlineScript.innerHTML = `
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '${measurementId}');
+    `;
+    document.head.appendChild(inlineScript);
+  }, []);
 
   // Fetch categories when settings are configured
   useEffect(() => {
@@ -62,6 +92,17 @@ const App: React.FC = () => {
       setError('Please enter a search term.');
       return;
     }
+    
+    // Track search event with Google Analytics
+    if (typeof window.gtag === 'function') {
+      const categoryName = categories.find(c => c.id === selectedCategory)?.name || 'All Categories';
+      window.gtag('event', 'search', {
+        search_term: query,
+        event_category: 'Torrent Search',
+        event_label: categoryName,
+      });
+    }
+
     setIsLoading(true);
     setError(null);
     setHasSearched(true);
@@ -76,7 +117,7 @@ const App: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [query, areSettingsConfigured, selectedCategory]);
+  }, [query, areSettingsConfigured, selectedCategory, categories]);
 
   const sortedResults = useMemo(() => {
       let sortableResults = [...results];
