@@ -45,10 +45,17 @@ const App: React.FC = () => {
 
   const areSettingsConfigured = useMemo(() => !!(jackettUrl && apiKey), []);
 
-  // DEBUG: Log state changes
+  // DEBUG: Log all state changes
   useEffect(() => {
-    console.log('🔄 App State - showDonationPopup:', showDonationPopup, 'hasShownDonationPopup:', hasShownDonationPopup);
-  }, [showDonationPopup, hasShownDonationPopup]);
+    console.log('🔄 App State Updated:', {
+      showDonationPopup,
+      hasShownDonationPopup,
+      hasSearched,
+      resultsCount: results.length,
+      isLoading,
+      error
+    });
+  }, [showDonationPopup, hasShownDonationPopup, hasSearched, results, isLoading, error]);
 
   // Initialize Google Analytics
   useEffect(() => {
@@ -89,6 +96,8 @@ const App: React.FC = () => {
   }, [areSettingsConfigured]);
 
   const handleSearch = useCallback(async () => {
+    console.log('🔍 handleSearch called with query:', query);
+    
     if (!areSettingsConfigured) {
         setError('Jackett server is not configured. Please provide the URL and API key via environment variables.');
         return;
@@ -98,6 +107,8 @@ const App: React.FC = () => {
       return;
     }
     
+    console.log('🎯 Starting search process...');
+
     // Track search event with Google Analytics
     if (typeof window.gtag === 'function') {
       const categoryName = categories.find(c => c.id === selectedCategory)?.name || 'All Categories';
@@ -112,27 +123,32 @@ const App: React.FC = () => {
     setError(null);
     setHasSearched(true);
     setCurrentPage(1);
+    
     try {
+      console.log('📡 Fetching torrents...');
       const data = await searchTorrents(query, jackettUrl, apiKey, selectedCategory);
+      console.log('✅ Search completed, results:', data.length);
+      
       setResults(data);
       
-      // DEBUG: Add detailed logging
-      console.log('🔍 Search completed:', {
-        query,
-        resultsCount: data.length,
+      // DEBUG: Check popup conditions
+      console.log('📋 Popup Conditions Check:', {
         hasShownDonationPopup,
+        resultsCount: data.length,
         shouldShowPopup: !hasShownDonationPopup,
-        showDonationPopup: !hasShownDonationPopup
+        query: query
       });
       
       if (!hasShownDonationPopup) {
-        console.log('🎯 Setting donation popup to show!');
+        console.log('🎯🎯🎯 SETTING POPUP TO TRUE!');
         setShowDonationPopup(true);
         setHasShownDonationPopup(true);
+        console.log('🎯🎯🎯 Popup should be visible NOW');
       } else {
-        console.log('❌ Popup already shown, not showing again');
+        console.log('⏩ Popup already shown, skipping');
       }
     } catch (err) {
+      console.error('❌ Search failed:', err);
       const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
       setError(`Failed to fetch results: ${errorMessage}`);
       setResults([]);
@@ -186,13 +202,16 @@ const App: React.FC = () => {
   return (
     <>
       <ProgressBar isLoading={isLoading} />
+      
+      {/* FORCE POPUP OPEN FOR TESTING - TEMPORARY */}
       <DonationPopup 
-        isOpen={showDonationPopup}
+        isOpen={true} // Force open to test
         onClose={() => {
-          console.log('👋 Closing donation popup');
+          console.log('👋 Manual close clicked');
           setShowDonationPopup(false);
         }}
       />
+      
       <div className="min-h-screen bg-slate-900 text-slate-200 font-sans">
         <div className="container mx-auto px-4 py-8">
           <header className="flex flex-col items-center justify-center text-center mb-8">
@@ -256,7 +275,7 @@ const App: React.FC = () => {
             <div className="flex flex-col gap-2 items-center">
               <button
                 onClick={() => {
-                  console.log('🔄 Manual popup trigger');
+                  console.log('🔄 Manual popup trigger clicked');
                   setShowDonationPopup(true);
                 }}
                 className="flex items-center justify-center gap-2 font-semibold text-slate-400 hover:text-sky-400 transition-colors mx-auto"
@@ -265,9 +284,12 @@ const App: React.FC = () => {
                   <span>Support with Crypto</span>
               </button>
               
-              {/* Temporary debug info */}
-              <div className="text-xs text-slate-600 mt-2">
-                Debug: Popup state: {showDonationPopup ? 'OPEN' : 'closed'}
+              {/* Debug info */}
+              <div className="text-xs text-slate-600 mt-2 p-2 bg-slate-800 rounded">
+                <div>Debug Info:</div>
+                <div>Popup: {showDonationPopup ? '🟢 OPEN' : '🔴 CLOSED'}</div>
+                <div>Has Shown: {hasShownDonationPopup ? 'YES' : 'NO'}</div>
+                <div>Results: {results.length}</div>
               </div>
             </div>
           </footer>
