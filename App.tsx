@@ -5,16 +5,19 @@ import SearchBar from './components/SearchBar';
 import ResultsTable from './components/ResultsTable';
 import CategoryFilter from './components/CategoryFilter';
 import ProgressBar from './components/ProgressBar';
-import DonationPopup from './components/DonationPopup';
+import DonationInfo from './components/DonationPopup';
 import { LogoIcon, CryptoIcon } from './components/Icons';
 
 // Default Jackett configuration.
+// For a self-hosted or pre-configured setup, you can replace these placeholder values.
 const DEFAULT_JACKETT_URL = 'http://43.160.202.61:9117';
 const DEFAULT_API_KEY = '';
 
+// Configuration is read from environment variables or defaults. No UI to change it.
 const jackettUrl = import.meta.env?.VITE_JACKETT_URL || DEFAULT_JACKETT_URL;
 const apiKey = import.meta.env?.VITE_JACKETT_API_KEY || DEFAULT_API_KEY;
 
+// Define gtag on window for TypeScript
 declare global {
   interface Window {
     gtag?: (...args: any[]) => void;
@@ -39,27 +42,15 @@ const App: React.FC = () => {
       direction: 'descending',
   });
 
-  // Donation Popup State
-  const [showDonationPopup, setShowDonationPopup] = useState<boolean>(false);
-  const [hasShownDonationPopup, setHasShownDonationPopup] = useState<boolean>(false);
+  // Donation Info State
+  const [showDonationInfo, setShowDonationInfo] = useState<boolean>(false);
 
   const areSettingsConfigured = useMemo(() => !!(jackettUrl && apiKey), []);
-
-  // DEBUG: Log all state changes
-  useEffect(() => {
-    console.log('🔄 App State Updated:', {
-      showDonationPopup,
-      hasShownDonationPopup,
-      hasSearched,
-      resultsCount: results.length,
-      isLoading,
-      error
-    });
-  }, [showDonationPopup, hasShownDonationPopup, hasSearched, results, isLoading, error]);
 
   // Initialize Google Analytics
   useEffect(() => {
     const measurementId = 'G-JF0E0PJETX';
+    // Prevent duplicate script injection
     if (document.getElementById('ga-script')) return;
 
     const script = document.createElement('script');
@@ -84,6 +75,7 @@ const App: React.FC = () => {
     const loadCategories = async () => {
       if (areSettingsConfigured) {
         try {
+          // Don't set global loading for this background fetch
           const fetchedCategories = await fetchCategories(jackettUrl, apiKey);
           setCategories(fetchedCategories);
         } catch (error) {
@@ -96,8 +88,6 @@ const App: React.FC = () => {
   }, [areSettingsConfigured]);
 
   const handleSearch = useCallback(async () => {
-    console.log('🔍 handleSearch called with query:', query);
-    
     if (!areSettingsConfigured) {
         setError('Jackett server is not configured. Please provide the URL and API key via environment variables.');
         return;
@@ -107,8 +97,6 @@ const App: React.FC = () => {
       return;
     }
     
-    console.log('🎯 Starting search process...');
-
     // Track search event with Google Analytics
     if (typeof window.gtag === 'function') {
       const categoryName = categories.find(c => c.id === selectedCategory)?.name || 'All Categories';
@@ -122,40 +110,18 @@ const App: React.FC = () => {
     setIsLoading(true);
     setError(null);
     setHasSearched(true);
-    setCurrentPage(1);
-    
+    setCurrentPage(1); // Reset to first page on new search
     try {
-      console.log('📡 Fetching torrents...');
       const data = await searchTorrents(query, jackettUrl, apiKey, selectedCategory);
-      console.log('✅ Search completed, results:', data.length);
-      
       setResults(data);
-      
-      // DEBUG: Check popup conditions
-      console.log('📋 Popup Conditions Check:', {
-        hasShownDonationPopup,
-        resultsCount: data.length,
-        shouldShowPopup: !hasShownDonationPopup,
-        query: query
-      });
-      
-      if (!hasShownDonationPopup) {
-        console.log('🎯🎯🎯 SETTING POPUP TO TRUE!');
-        setShowDonationPopup(true);
-        setHasShownDonationPopup(true);
-        console.log('🎯🎯🎯 Popup should be visible NOW');
-      } else {
-        console.log('⏩ Popup already shown, skipping');
-      }
     } catch (err) {
-      console.error('❌ Search failed:', err);
       const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
       setError(`Failed to fetch results: ${errorMessage}`);
       setResults([]);
     } finally {
       setIsLoading(false);
     }
-  }, [query, areSettingsConfigured, selectedCategory, categories, hasShownDonationPopup]);
+  }, [query, areSettingsConfigured, selectedCategory, categories]);
 
   const sortedResults = useMemo(() => {
       let sortableResults = [...results];
@@ -188,7 +154,7 @@ const App: React.FC = () => {
           direction = 'ascending';
       }
       setSortConfig({ key, direction });
-      setCurrentPage(1);
+      setCurrentPage(1); // Reset to first page on sort
   };
   
   // Pagination logic
@@ -202,16 +168,6 @@ const App: React.FC = () => {
   return (
     <>
       <ProgressBar isLoading={isLoading} />
-      
-      {/* FORCE POPUP OPEN FOR TESTING - TEMPORARY */}
-      <DonationPopup 
-        isOpen={true} // Force open to test
-        onClose={() => {
-          console.log('👋 Manual close clicked');
-          setShowDonationPopup(false);
-        }}
-      />
-      
       <div className="min-h-screen bg-slate-900 text-slate-200 font-sans">
         <div className="container mx-auto px-4 py-8">
           <header className="flex flex-col items-center justify-center text-center mb-8">
@@ -271,27 +227,16 @@ const App: React.FC = () => {
             </div>
           </main>
           
+          {showDonationInfo && <DonationInfo />}
+
           <footer className="text-center mt-12 text-slate-500 text-sm">
-            <div className="flex flex-col gap-2 items-center">
-              <button
-                onClick={() => {
-                  console.log('🔄 Manual popup trigger clicked');
-                  setShowDonationPopup(true);
-                }}
+             <button
+                onClick={() => setShowDonationInfo(prev => !prev)}
                 className="flex items-center justify-center gap-2 font-semibold text-slate-400 hover:text-sky-400 transition-colors mx-auto"
               >
                   <CryptoIcon className="w-5 h-5" />
                   <span>Support with Crypto</span>
               </button>
-              
-              {/* Debug info */}
-              <div className="text-xs text-slate-600 mt-2 p-2 bg-slate-800 rounded">
-                <div>Debug Info:</div>
-                <div>Popup: {showDonationPopup ? '🟢 OPEN' : '🔴 CLOSED'}</div>
-                <div>Has Shown: {hasShownDonationPopup ? 'YES' : 'NO'}</div>
-                <div>Results: {results.length}</div>
-              </div>
-            </div>
           </footer>
         </div>
       </div>

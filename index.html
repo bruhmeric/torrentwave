@@ -2,89 +2,42 @@
 <html lang="en">
   <head>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-JF0E0PJETX"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-JF0E0PJETX');
-    </script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-JF0E0PJETX');
+</script>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Torrent Wave</title>
-    
-    <!-- Tailwind CSS with custom configuration -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            animation: {
-              shimmer: 'shimmer 1.5s ease-in-out infinite',
-              'fade-in': 'fade-in 0.3s ease-out',
-              'zoom-in': 'zoom-in 0.3s ease-out forwards',
-            },
-            keyframes: {
-              shimmer: {
-                '0%': { transform: 'translateX(-100%)' },
-                '100%': { transform: 'translateX(100%)' },
-              },
-              'fade-in': {
-                'from': { opacity: '0' },
-                'to': { opacity: '1' },
-              },
-              'zoom-in': {
-                'from': { transform: 'scale(0.95)', opacity: '0' },
-                'to': { transform: 'scale(1)', opacity: '1' },
-              }
-            }
-          }
-        }
-      }
-    </script>
-    
-    <!-- Custom styles for animations -->
     <style>
       @keyframes shimmer {
         0% { transform: translateX(-100%); }
         100% { transform: translateX(100%); }
       }
-      
-      @keyframes fade-in {
-        from { opacity: 0; }
-        to { opacity: 1; }
-      }
-      
-      @keyframes zoom-in {
-        from { transform: scale(0.95); opacity: 0; }
-        to { transform: scale(1); opacity: 1; }
-      }
-
-      /* Ensure proper stacking context for modals */
-      .modal-overlay {
-        z-index: 50;
-      }
-      
-      .modal-content {
-        z-index: 51;
+      .animate-shimmer {
+        animation: shimmer 1.5s ease-in-out infinite;
       }
     </style>
-
-    <script type="importmap">
-      {
-        "imports": {
-          "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
-          "react/": "https://aistudiocdn.com/react@^19.1.1/",
-          "react": "https://aistudiocdn.com/react@^19.1.1",
-          "vite": "https://aistudiocdn.com/vite@^7.1.7",
-          "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.0.4",
-          "express": "https://aistudiocdn.com/express@^5.1.0",
-          "path": "https://aistudiocdn.com/path@^0.12.7",
-          "url": "https://aistudiocdn.com/url@^0.11.4"
-        }
-      }
-    </script>
-  </head>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
+    "react/": "https://aistudiocdn.com/react@^19.1.1/",
+    "react": "https://aistudiocdn.com/react@^19.1.1",
+    "vite": "https://aistudiocdn.com/vite@^7.1.7",
+    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.0.4",
+    "express": "https://aistudiocdn.com/express@^5.1.0",
+    "path": "https://aistudiocdn.com/path@^0.12.7",
+    "url": "https://aistudiocdn.com/url@^0.11.4"
+  }
+}
+</script>
+</head>
   <body class="bg-slate-900">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
