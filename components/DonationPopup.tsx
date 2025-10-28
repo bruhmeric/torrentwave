@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CryptoIcon, UsdtIcon, BtcIcon, ClipboardCopyIcon, CheckIcon, CloseIcon } from './Icons';
+import { UsdtIcon, BtcIcon, ClipboardCopyIcon, CheckIcon, CloseIcon } from './Icons';
 
 interface CryptoAddressProps {
     name: string;
