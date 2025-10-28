@@ -9,15 +9,12 @@ import DonationPopup from './components/DonationPopup';
 import { LogoIcon, CryptoIcon } from './components/Icons';
 
 // Default Jackett configuration.
-// For a self-hosted or pre-configured setup, you can replace these placeholder values.
 const DEFAULT_JACKETT_URL = 'http://43.160.202.61:9117';
 const DEFAULT_API_KEY = '';
 
-// Configuration is read from environment variables or defaults. No UI to change it.
 const jackettUrl = import.meta.env?.VITE_JACKETT_URL || DEFAULT_JACKETT_URL;
 const apiKey = import.meta.env?.VITE_JACKETT_API_KEY || DEFAULT_API_KEY;
 
-// Define gtag on window for TypeScript
 declare global {
   interface Window {
     gtag?: (...args: any[]) => void;
@@ -48,10 +45,14 @@ const App: React.FC = () => {
 
   const areSettingsConfigured = useMemo(() => !!(jackettUrl && apiKey), []);
 
+  // DEBUG: Log state changes
+  useEffect(() => {
+    console.log('🔄 App State - showDonationPopup:', showDonationPopup, 'hasShownDonationPopup:', hasShownDonationPopup);
+  }, [showDonationPopup, hasShownDonationPopup]);
+
   // Initialize Google Analytics
   useEffect(() => {
     const measurementId = 'G-JF0E0PJETX';
-    // Prevent duplicate script injection
     if (document.getElementById('ga-script')) return;
 
     const script = document.createElement('script');
@@ -76,7 +77,6 @@ const App: React.FC = () => {
     const loadCategories = async () => {
       if (areSettingsConfigured) {
         try {
-          // Don't set global loading for this background fetch
           const fetchedCategories = await fetchCategories(jackettUrl, apiKey);
           setCategories(fetchedCategories);
         } catch (error) {
@@ -111,13 +111,26 @@ const App: React.FC = () => {
     setIsLoading(true);
     setError(null);
     setHasSearched(true);
-    setCurrentPage(1); // Reset to first page on new search
+    setCurrentPage(1);
     try {
       const data = await searchTorrents(query, jackettUrl, apiKey, selectedCategory);
       setResults(data);
-       if (!hasShownDonationPopup) {
+      
+      // DEBUG: Add detailed logging
+      console.log('🔍 Search completed:', {
+        query,
+        resultsCount: data.length,
+        hasShownDonationPopup,
+        shouldShowPopup: !hasShownDonationPopup,
+        showDonationPopup: !hasShownDonationPopup
+      });
+      
+      if (!hasShownDonationPopup) {
+        console.log('🎯 Setting donation popup to show!');
         setShowDonationPopup(true);
         setHasShownDonationPopup(true);
+      } else {
+        console.log('❌ Popup already shown, not showing again');
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
@@ -159,7 +172,7 @@ const App: React.FC = () => {
           direction = 'ascending';
       }
       setSortConfig({ key, direction });
-      setCurrentPage(1); // Reset to first page on sort
+      setCurrentPage(1);
   };
   
   // Pagination logic
@@ -175,7 +188,10 @@ const App: React.FC = () => {
       <ProgressBar isLoading={isLoading} />
       <DonationPopup 
         isOpen={showDonationPopup}
-        onClose={() => setShowDonationPopup(false)}
+        onClose={() => {
+          console.log('👋 Closing donation popup');
+          setShowDonationPopup(false);
+        }}
       />
       <div className="min-h-screen bg-slate-900 text-slate-200 font-sans">
         <div className="container mx-auto px-4 py-8">
@@ -237,13 +253,23 @@ const App: React.FC = () => {
           </main>
           
           <footer className="text-center mt-12 text-slate-500 text-sm">
-             <button
-                onClick={() => setShowDonationPopup(true)}
+            <div className="flex flex-col gap-2 items-center">
+              <button
+                onClick={() => {
+                  console.log('🔄 Manual popup trigger');
+                  setShowDonationPopup(true);
+                }}
                 className="flex items-center justify-center gap-2 font-semibold text-slate-400 hover:text-sky-400 transition-colors mx-auto"
               >
                   <CryptoIcon className="w-5 h-5" />
                   <span>Support with Crypto</span>
               </button>
+              
+              {/* Temporary debug info */}
+              <div className="text-xs text-slate-600 mt-2">
+                Debug: Popup state: {showDonationPopup ? 'OPEN' : 'closed'}
+              </div>
+            </div>
           </footer>
         </div>
       </div>
