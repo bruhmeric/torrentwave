@@ -5,13 +5,12 @@ const usdtAddress = 'TDvs92AbCaizmcorx2rdYF2pyDWiHU3E7X';
 const btcAddress = '14KoMft8bjqQBhdx497gpBH6eGmzZLwEEu';
 
 const CryptoAddress: React.FC<{
-    type: 'usdt' | 'btc';
     name: string;
     address: string;
     icon: React.ReactNode;
     link: string;
     qrData: string;
-}> = ({ type, name, address, icon, link, qrData }) => {
+}> = ({ name, address, icon, link, qrData }) => {
     const [isCopied, setIsCopied] = useState(false);
 
     const handleCopy = () => {
@@ -73,7 +72,7 @@ const CryptoAddress: React.FC<{
 const DonationInfo: React.FC = () => {
     return (
         <div
-            className="max-w-md mx-auto my-8 p-6 bg-slate-800 border border-slate-700 rounded-lg shadow-xl text-center transition-all duration-300 animate-[fade-in_0.3s_ease-out]"
+            className="max-w-3xl mx-auto my-8 p-6 bg-slate-800/50 border border-slate-700 rounded-lg text-center transition-all duration-300 animate-[fade-in_0.3s_ease-out]"
             id="donation-section"
         >
             <h2 className="text-2xl font-bold text-slate-100 mb-2">Support with Crypto</h2>
@@ -84,7 +83,6 @@ const DonationInfo: React.FC = () => {
             
             <div className="space-y-4 text-left">
                 <CryptoAddress 
-                    type="usdt"
                     name="USDT (TRC20)"
                     address={usdtAddress}
                     icon={<UsdtIcon />}
@@ -92,7 +90,6 @@ const DonationInfo: React.FC = () => {
                     qrData={usdtAddress}
                 />
                 <CryptoAddress 
-                    type="btc"
                     name="Bitcoin (BTC)"
                     address={btcAddress}
                     icon={<BtcIcon />}
