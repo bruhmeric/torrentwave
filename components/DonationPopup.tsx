@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { UsdtIcon, BtcIcon, ClipboardCopyIcon, CheckIcon } from './Icons';
+import { UsdtIcon, BtcIcon, ClipboardCopyIcon, CheckIcon, CloseIcon } from './Icons';
 
 const usdtAddress = 'TDvs92AbCaizmcorx2rdYF2pyDWiHU3E7X';
 const btcAddress = '14KoMft8bjqQBhdx497gpBH6eGmzZLwEEu';
@@ -96,12 +96,23 @@ const CryptoAddress: React.FC<{
     );
 };
 
-const DonationInfo: React.FC = () => {
+interface DonationInfoProps {
+    onClose: () => void;
+}
+
+const DonationInfo: React.FC<DonationInfoProps> = ({ onClose }) => {
     return (
         <div
-            className="max-w-md mx-auto my-8 p-6 bg-slate-800 border border-slate-700 rounded-lg shadow-xl text-center transition-all duration-300 animate-[fade-in_0.3s_ease-out]"
+            className="relative max-w-md mx-auto my-8 p-6 bg-slate-800 border border-slate-700 rounded-lg shadow-xl text-center transition-all duration-300 animate-[fade-in_0.3s_ease-out]"
             id="donation-section"
         >
+            <button
+                onClick={onClose}
+                className="absolute top-3 right-3 p-2 text-slate-500 rounded-full hover:bg-slate-700 hover:text-slate-200 transition-colors"
+                aria-label="Close donation info"
+            >
+                <CloseIcon />
+            </button>
             <h2 className="text-2xl font-bold text-slate-100 mb-2">Support with Crypto</h2>
             <p className="text-slate-400 mb-6">
                 Your support helps keep the server running.
