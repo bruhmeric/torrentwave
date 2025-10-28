@@ -56,7 +56,7 @@ export const ClipboardCopyIcon: React.FC = () => (
 );
 
 export const CheckIcon: React.FC = () => (
-    <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
 );
 
 export const CloseIcon: React.FC = () => (
@@ -84,5 +84,25 @@ export const SortIcon: React.FC<{ className?: string }> = ({ className }) => (
 export const ChevronDownIcon: React.FC = () => (
     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+    </svg>
+);
+
+export const UsdtIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg className={className || "w-8 h-8"} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="12" fill="#26A17B"/>
+        <path d="M12.6667 8.33333V16H11.3333V8.33333H7V7H17V8.33333H12.6667Z" fill="white"/>
+    </svg>
+);
+
+export const BtcIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg className={className || "w-8 h-8"} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="12" fill="#F7931A"/>
+        <path d="M15.4 14.51C16.03 13.99 16.34 13.25 16.34 12.24C16.34 10.74 15.54 9.79 14.28 9.31V9.3C14.88 8.89 15.34 8.12 15.34 7.18C15.34 5.76 14.38 4.84 12.88 4.84H8.75V19.16H10.05V16.33H12.82L13.33 19.16H14.73L14.12 16.05C14.77 15.85 15.04 15.4 15.4 14.51ZM11.23 10.59H12.26C13.11 10.59 13.53 10.96 13.53 11.64C13.53 12.3 13.11 12.7 12.26 12.7H11.23V10.59ZM11.23 7.08H12.16C12.94 7.08 13.34 7.42 13.34 8.08C13.34 8.73 12.94 9.09 12.16 9.09H11.23V7.08ZM11.23 15.06V13.56H12.5C13.48 13.56 14.04 13.94 14.04 14.75C14.04 15.56 13.48 15.96 12.5 15.96H11.71L11.23 15.06Z" fill="white"/>
+    </svg>
+);
+
+export const CryptoIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg className={className || "w-5 h-5"} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM12 11.55c.59 0 1.05-.47 1.05-1.05s-.47-1.05-1.05-1.05c-.59 0-1.05.47-1.05 1.05s.47 1.05 1.05 1.05zm1.87-2.12c.44-.26.73-.76.73-1.33 0-.83-.67-1.5-1.5-1.5-.39 0-.74.15-1.01.38-.2-.39-.6-.68-1.09-.68-.83 0-1.5.67-1.5 1.5 0 .57.3 1.07.73 1.33-.26.26-.43.6-.43.97 0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5c0-.37-.17-.71-.43-.97z" />
     </svg>
 );
