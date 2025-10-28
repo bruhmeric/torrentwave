@@ -5,7 +5,8 @@ import SearchBar from './components/SearchBar';
 import ResultsTable from './components/ResultsTable';
 import CategoryFilter from './components/CategoryFilter';
 import ProgressBar from './components/ProgressBar';
-import { LogoIcon } from './components/Icons';
+import DonationPopup from './components/DonationPopup';
+import { LogoIcon, CryptoIcon } from './components/Icons';
 
 // Default Jackett configuration.
 // For a self-hosted or pre-configured setup, you can replace these placeholder values.
@@ -40,6 +41,10 @@ const App: React.FC = () => {
       key: 'Seeders',
       direction: 'descending',
   });
+
+  // Donation Popup State
+  const [showDonationPopup, setShowDonationPopup] = useState<boolean>(false);
+  const [hasShownDonationPopup, setHasShownDonationPopup] = useState<boolean>(false);
 
   const areSettingsConfigured = useMemo(() => !!(jackettUrl && apiKey), []);
 
@@ -110,6 +115,10 @@ const App: React.FC = () => {
     try {
       const data = await searchTorrents(query, jackettUrl, apiKey, selectedCategory);
       setResults(data);
+       if (!hasShownDonationPopup) {
+        setShowDonationPopup(true);
+        setHasShownDonationPopup(true);
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
       setError(`Failed to fetch results: ${errorMessage}`);
@@ -117,7 +126,7 @@ const App: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [query, areSettingsConfigured, selectedCategory, categories]);
+  }, [query, areSettingsConfigured, selectedCategory, categories, hasShownDonationPopup]);
 
   const sortedResults = useMemo(() => {
       let sortableResults = [...results];
@@ -164,6 +173,10 @@ const App: React.FC = () => {
   return (
     <>
       <ProgressBar isLoading={isLoading} />
+      <DonationPopup 
+        isOpen={showDonationPopup}
+        onClose={() => setShowDonationPopup(false)}
+      />
       <div className="min-h-screen bg-slate-900 text-slate-200 font-sans">
         <div className="container mx-auto px-4 py-8">
           <header className="flex flex-col items-center justify-center text-center mb-8">
@@ -224,6 +237,13 @@ const App: React.FC = () => {
           </main>
           
           <footer className="text-center mt-12 text-slate-500 text-sm">
+             <button
+                onClick={() => setShowDonationPopup(true)}
+                className="flex items-center justify-center gap-2 font-semibold text-slate-400 hover:text-sky-400 transition-colors mx-auto"
+              >
+                  <CryptoIcon className="w-5 h-5" />
+                  <span>Support with Crypto</span>
+              </button>
           </footer>
         </div>
       </div>
