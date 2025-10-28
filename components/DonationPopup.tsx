@@ -78,12 +78,39 @@ const CryptoAddress: React.FC<CryptoAddressProps> = ({ name, address, icon, qrDa
 
 const DonationWidget: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const [emailCopied, setEmailCopied] = useState(false);
+
+    const handleEmailCopy = () => {
+        const email = "torrentwave@proton.me";
+        if (!email) return;
+
+        const fallbackCopy = (text: string) => {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed"; textArea.style.top = "0"; textArea.style.left = "0"; textArea.style.opacity = "0";
+            document.body.appendChild(textArea);
+            textArea.focus(); textArea.select();
+            try { document.execCommand('copy'); setCopiedState(); } catch (err) { console.error('Fallback copy failed', err); }
+            document.body.removeChild(textArea);
+        };
+
+        const setCopiedState = () => {
+            setEmailCopied(true);
+            setTimeout(() => setEmailCopied(false), 2500);
+        };
+
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(email).then(setCopiedState).catch(() => fallbackCopy(email));
+        } else {
+            fallbackCopy(email);
+        }
+    };
 
     return (
         <>
             {/* The Panel */}
             <div 
-                className={`fixed bottom-24 right-5 max-w-xs w-full p-4 bg-slate-800 border border-slate-700 rounded-lg shadow-xl text-center transition-all duration-300 ease-out z-40 ${
+                className={`fixed bottom-24 right-5 max-w-xs w-full p-4 bg-slate-800 border border-slate-700 rounded-lg shadow-xl text-center transition-all duration-300 ease-out z-40 max-h-[70vh] overflow-y-auto ${
                     isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
                 }`}
                 role="dialog"
@@ -113,6 +140,37 @@ const DonationWidget: React.FC = () => {
                         icon={<BtcIcon className="w-6 h-6"/>}
                         qrData="bitcoin:14KoMft8bjqQBhdx497gpBH6eGmzZLwEEu"
                     />
+                    <div className="bg-slate-900/70 p-3 rounded-lg border border-slate-700 text-center">
+                        <div className="flex items-center justify-center mb-2">
+                            <h3 className="text-md font-semibold text-slate-200">send mail</h3>
+                        </div>
+                        <div className="bg-slate-950 p-1.5 rounded-md">
+                            <div className="flex items-center gap-2">
+                                <p className="text-xs text-sky-400 break-all flex-grow text-left pl-1" title="torrentwave@proton.me">torrentwave@proton.me</p>
+                                <button
+                                    onClick={handleEmailCopy}
+                                    className={`flex-shrink-0 flex items-center justify-center gap-1.5 w-24 px-2 py-1.5 text-xs rounded-md font-semibold transition-all duration-200 ${
+                                        emailCopied
+                                        ? 'bg-green-600 text-white'
+                                        : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                                    }`}
+                                    aria-label={`Copy email address`}
+                                >
+                                    {emailCopied ? (
+                                        <>
+                                            <CheckIcon />
+                                            <span>Copied!</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <ClipboardCopyIcon />
+                                            <span>Copy</span>
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
