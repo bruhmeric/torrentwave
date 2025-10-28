@@ -43,7 +43,7 @@ const App: React.FC = () => {
   });
 
   // Donation Info State
-  const [showDonationInfo, setShowDonationInfo] = useState<boolean>(false);
+  const [showDonationInfo, setShowDonationInfo] = useState<boolean>(true);
 
   const areSettingsConfigured = useMemo(() => !!(jackettUrl && apiKey), []);
 
@@ -205,6 +205,8 @@ const App: React.FC = () => {
               </div>
             </div>
 
+            {showDonationInfo && <DonationInfo onClose={() => setShowDonationInfo(false)} />}
+
             {error && (
               <div className="max-w-3xl mx-auto text-center p-4 bg-red-900/50 border border-red-700 rounded-lg">
                 <p className="text-red-400">{error}</p>
@@ -227,15 +229,13 @@ const App: React.FC = () => {
             </div>
           </main>
           
-          {showDonationInfo && <DonationInfo />}
-
           <footer className="text-center mt-12 text-slate-500 text-sm">
              <button
                 onClick={() => setShowDonationInfo(prev => !prev)}
                 className="flex items-center justify-center gap-2 font-semibold text-slate-400 hover:text-sky-400 transition-colors mx-auto"
               >
                   <CryptoIcon className="w-5 h-5" />
-                  <span>Support with Crypto</span>
+                  <span>{showDonationInfo ? 'Hide Support Info' : 'Support with Crypto'}</span>
               </button>
           </footer>
         </div>
