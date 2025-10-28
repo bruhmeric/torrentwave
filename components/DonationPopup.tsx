@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CloseIcon, UsdtIcon, BtcIcon, ClipboardCopyIcon, CheckIcon } from './Icons';
 
 interface DonationPopupProps {
@@ -11,6 +11,14 @@ const btcAddress = '14KoMft8bjqQBhdx497gpBH6eGmzZLwEEu';
 
 const DonationPopup: React.FC<DonationPopupProps> = ({ isOpen, onClose }) => {
   const [copiedAddress, setCopiedAddress] = useState<'usdt' | 'btc' | null>(null);
+
+  // DEBUG: Log when popup opens/closes
+  useEffect(() => {
+    console.log('🎪 DonationPopup - isOpen:', isOpen);
+    if (isOpen) {
+      console.log('🚀 Popup should be visible now!');
+    }
+  }, [isOpen]);
 
   const handleCopy = (address: string, type: 'usdt' | 'btc') => {
     navigator.clipboard.writeText(address).then(() => {
