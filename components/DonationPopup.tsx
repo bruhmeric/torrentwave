@@ -119,11 +119,11 @@ const DonationWidget: React.FC = () => {
             {/* The Floating Button */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="fixed bottom-5 right-5 w-14 h-14 bg-sky-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-sky-500 transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-sky-500/50 z-50"
+                className="fixed bottom-5 right-5 px-4 py-2 bg-sky-600 text-white rounded-md shadow-lg flex items-center justify-center hover:bg-sky-500 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-sky-500/50 z-50 font-semibold"
                 aria-label="Toggle support panel"
                 aria-expanded={isOpen}
             >
-                <CryptoIcon className="w-7 h-7" />
+                support us ❤️
             </button>
         </>
     );
