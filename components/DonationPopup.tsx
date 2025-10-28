@@ -5,19 +5,47 @@ const usdtAddress = 'TDvs92AbCaizmcorx2rdYF2pyDWiHU3E7X';
 const btcAddress = '14KoMft8bjqQBhdx497gpBH6eGmzZLwEEu';
 
 const CryptoAddress: React.FC<{
+    type: 'usdt' | 'btc';
     name: string;
     address: string;
     icon: React.ReactNode;
     link: string;
     qrData: string;
-}> = ({ name, address, icon, link, qrData }) => {
+}> = ({ type, name, address, icon, link, qrData }) => {
     const [isCopied, setIsCopied] = useState(false);
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(address).then(() => {
-            setIsCopied(true);
-            setTimeout(() => setIsCopied(false), 2500);
-        });
+        const fallbackCopy = (text: string) => {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.opacity = "0";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                setIsCopied(true);
+                setTimeout(() => setIsCopied(false), 2500);
+            } catch (err) {
+                console.error('Fallback copy exception:', err);
+            }
+            document.body.removeChild(textArea);
+        };
+
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(address).then(() => {
+                setIsCopied(true);
+                setTimeout(() => setIsCopied(false), 2500);
+            }).catch(err => {
+                console.error('Failed to copy with Clipboard API, falling back.', err);
+                fallbackCopy(address);
+            });
+        } else {
+            fallbackCopy(address);
+        }
     };
 
     return (
@@ -72,7 +100,7 @@ const CryptoAddress: React.FC<{
 const DonationInfo: React.FC = () => {
     return (
         <div
-            className="max-w-3xl mx-auto my-8 p-6 bg-slate-800/50 border border-slate-700 rounded-lg text-center transition-all duration-300 animate-[fade-in_0.3s_ease-out]"
+            className="max-w-md mx-auto my-8 p-6 bg-slate-800 border border-slate-700 rounded-lg shadow-xl text-center transition-all duration-300 animate-[fade-in_0.3s_ease-out]"
             id="donation-section"
         >
             <h2 className="text-2xl font-bold text-slate-100 mb-2">Support with Crypto</h2>
@@ -83,6 +111,7 @@ const DonationInfo: React.FC = () => {
             
             <div className="space-y-4 text-left">
                 <CryptoAddress 
+                    type="usdt"
                     name="USDT (TRC20)"
                     address={usdtAddress}
                     icon={<UsdtIcon />}
@@ -90,6 +119,7 @@ const DonationInfo: React.FC = () => {
                     qrData={usdtAddress}
                 />
                 <CryptoAddress 
+                    type="btc"
                     name="Bitcoin (BTC)"
                     address={btcAddress}
                     icon={<BtcIcon />}
@@ -97,12 +127,6 @@ const DonationInfo: React.FC = () => {
                     qrData={`bitcoin:${btcAddress}`}
                 />
             </div>
-            <style>{`
-                @keyframes fade-in {
-                    from { opacity: 0; transform: translateY(10px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-            `}</style>
         </div>
     );
 };
