@@ -105,3 +105,9 @@ export const CryptoIcon: React.FC<{ className?: string }> = ({ className }) => (
         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM12 11.55c.59 0 1.05-.47 1.05-1.05s-.47-1.05-1.05-1.05c-.59 0-1.05.47-1.05 1.05s.47 1.05 1.05 1.05zm1.87-2.12c.44-.26.73-.76.73-1.33 0-.83-.67-1.5-1.5-1.5-.39 0-.74.15-1.01.38-.2-.39-.6-.68-1.09-.68-.83 0-1.5.67-1.5 1.5 0 .57.3 1.07.73 1.33-.26.26-.43.6-.43.97 0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5c0-.37-.17-.71-.43-.97z" />
     </svg>
 );
+
+export const MailIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg className={className || "w-6 h-6"} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+    </svg>
+);

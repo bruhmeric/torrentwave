@@ -104,13 +104,25 @@ export const fetchCategories = async (
 };
 
 
+// Comprehensive list of stable public trackers
 const PUBLIC_TRACKERS = [
-  'udp://tracker.openbittorrent.com:80',
   'udp://tracker.opentrackr.org:1337/announce',
-  'udp://tracker.torrent.eu.org:451/announce',
   'udp://open.tracker.cl:1337/announce',
+  'udp://9.rarbg.com:2810/announce',
+  'udp://tracker.openbittorrent.com:80/announce',
+  'udp://opentracker.i2p.rocks:6969/announce',
+  'udp://tracker.internetwarriors.net:1337/announce',
+  'udp://tracker.leechers-paradise.org:6969/announce',
+  'udp://coppersurfer.tk:6969/announce',
+  'udp://tracker.zer0day.to:1337/announce',
   'udp://p4p.arenabg.com:1337/announce',
-  'udp://tracker.dler.org:6969/announce',
+  'udp://tracker.torrent.eu.org:451/announce',
+  'udp://tracker.tiny-vps.com:6969/announce',
+  'udp://open.stealth.si:80/announce',
+  'http://tracker.openbittorrent.com:80/announce',
+  'udp://tracker.moeking.me:6969/announce',
+  'udp://ipv4.tracker.harry.lu:80/announce',
+  'udp://tracker.cyberia.is:6969/announce',
 ];
 
 export const searchTorrents = async (
@@ -147,11 +159,34 @@ export const searchTorrents = async (
 
     const data = await response.json();
     const results: TorrentResult[] = (data.Results || []).map((result: TorrentResult) => {
-        if (!result.MagnetUri && result.InfoHash) {
+        let magnetUri = result.MagnetUri;
+
+        // Fallback: If MagnetUri is missing but Link looks like a magnet link, use it.
+        if (!magnetUri && result.Link && result.Link.startsWith('magnet:')) {
+            magnetUri = result.Link;
+        }
+
+        if (magnetUri) {
+            // Enhance existing magnet link with public trackers
+            // Check for existing trackers to avoid duplicates (basic check based on encoded string)
+            const trackersToAdd = PUBLIC_TRACKERS.filter(tracker => 
+                !magnetUri!.includes(encodeURIComponent(tracker))
+            );
+            
+            if (trackersToAdd.length > 0) {
+                 const trackerQuery = trackersToAdd.map(t => `tr=${encodeURIComponent(t)}`).join('&');
+                 // Check if magnet link already has query parameters
+                 const separator = magnetUri!.includes('?') ? '&' : '?';
+                 magnetUri = `${magnetUri}${separator}${trackerQuery}`;
+            }
+        } else if (result.InfoHash) {
+            // Construct new magnet link from InfoHash if original MagnetUri is missing
             const displayName = encodeURIComponent(result.Title);
             const trackerQuery = PUBLIC_TRACKERS.map(tracker => `tr=${encodeURIComponent(tracker)}`).join('&');
-            result.MagnetUri = `magnet:?xt=urn:btih:${result.InfoHash}&dn=${displayName}&${trackerQuery}`;
+            magnetUri = `magnet:?xt=urn:btih:${result.InfoHash}&dn=${displayName}&${trackerQuery}`;
         }
+        
+        result.MagnetUri = magnetUri;
         return result;
     });
     
